@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
 /**
@@ -16,11 +17,12 @@ import com.badlogic.gdx.physics.box2d.World;
  */
 public class TelaJogo extends TelaBase {
 
-    private static final float escala = 2;
-    private static final float pixel_metro = 32;
+
 
     private OrthographicCamera camera; // camera do jogo
     private World mundo; //representa o mundo do box2d
+    private Body chao; //corpo do chao
+    private Passaro passaro;
 
     private Box2DDebugRenderer debug; // desenha o mundo na tela para ajudar no desenvolvimento
 
@@ -30,27 +32,21 @@ public class TelaJogo extends TelaBase {
 
     @Override
     public void show() {
-        camera = new OrthographicCamera(Gdx.graphics.getWidth() / escala, Gdx.graphics.getHeight() / escala);
+        camera = new OrthographicCamera(Gdx.graphics.getWidth() / Util.escala, Gdx.graphics.getHeight() / Util.escala);
         debug = new Box2DDebugRenderer();
         mundo = new World(new Vector2(0,-9.8f), false);
+        initChao();
         initPassaro();
     }
 
+    private void initChao() {
+        chao = Util.criarCorpo(mundo, BodyDef.BodyType.StaticBody, 0, 0);
+
+
+    }
+
     private void initPassaro() {
-        BodyDef def = new BodyDef(); // objeto de define do corpo
-        def.type = BodyDef.BodyType.DynamicBody;
-        float y = (Gdx.graphics.getHeight()/ 2/ escala)/ pixel_metro + 2;
-        float x = (Gdx.graphics.getWidth()/ 2/ escala)/ pixel_metro + 2;
-        def.position.set(x,y);
-        def.fixedRotation = false;
-
-        Body corpo = mundo.createBody(def);// cria do corpo
-
-        CircleShape shape = new CircleShape();//forma do corpo
-        shape.setRadius(20 / pixel_metro);
-
-        Fixture fixacao = corpo.createFixture(shape, 1);
-        shape.dispose();
+        passaro = new Passaro(mundo,camera,null);
 
     }
 
@@ -59,17 +55,67 @@ public class TelaJogo extends TelaBase {
         Gdx.gl.glClearColor(.25f, .25f, .25f, 1);// limpa a tela e pinta a cor de fundo
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);// mantem o buffer de cores
 
-        camera.position.set(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f, 0);
-        camera.update();
+        atualizar(delta);
+        renderizar(delta);
 
-        mundo.step(delta, 6, 2);
 
-        debug.render(mundo, camera.combined.scl(pixel_metro));
+
+
+        debug.render(mundo, camera.combined.cpy().scl(Util.pixel_metro));
+
+    }
+
+
+
+
+    /**
+     * renderizar/desenhar
+     * @param delta
+     */
+    private void renderizar(float delta) {
+
+    }
+
+    /**
+     * atualização e calculo dos corpos
+     * @param delta
+     */
+
+    private void atualizar(float delta) {
+        mundo.step(1f / 60f, 6, 2);
+        atualizarChao();
+
+    }
+
+    /**
+     * atualiza a posição do chao para acompanhar o passaro
+     */
+    private void atualizarChao() {
+        float largura = camera.viewportWidth / Util.pixel_metro;
+        Vector2 posicao = chao.getPosition();
+        posicao.x = largura /2;
+        chao.setTransform(posicao, 0);
 
     }
 
     @Override
     public void resize(int width, int height) {
+        camera.setToOrtho(false, width / Util.escala, height / Util.escala);
+        camera.update();
+        redimensionaChao();
+
+    }
+
+    /**
+     * Configura o tamanho do chão de acordo com o tamanho da tela.
+     */
+    private void redimensionaChao() {
+        chao.getFixtureList().clear();
+        float largura = camera.viewportWidth / Util.pixel_metro;
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(largura /2, Util.altura_chao / 2);
+        Fixture forma = Util.criarForma(chao, shape, "chao");
+        shape.dispose();
 
     }
 
@@ -90,6 +136,7 @@ public class TelaJogo extends TelaBase {
 
     @Override
     public void dispose() {
-
+    debug.dispose();
+        mundo.dispose();
     }
 }
