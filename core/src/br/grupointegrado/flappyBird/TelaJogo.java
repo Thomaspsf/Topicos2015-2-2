@@ -12,7 +12,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -43,8 +42,8 @@ public class TelaJogo extends TelaBase {
     private Array<Obstaculo> obstaculo = new Array<Obstaculo>();
     private int pontuacao = 0;
     private BitmapFont fontePontuacao;
+
     private Stage palcoInformacoes;
-    private Stage palcoInformacaoes;
     private Label lbPontuacao;
     private ImageButton btnPlay;
     private ImageButton btnGameOver;
@@ -141,13 +140,13 @@ public class TelaJogo extends TelaBase {
     }
 
     private void initInformacoes() {
-        palcoInformacaoes = new Stage(new FillViewport(cameraInfo.viewportWidth,cameraInfo.viewportHeight, cameraInfo));
-        Gdx.input.setInputProcessor(palcoInformacaoes);
+        palcoInformacoes = new Stage(new FillViewport(cameraInfo.viewportWidth,cameraInfo.viewportHeight, cameraInfo));
+        Gdx.input.setInputProcessor(palcoInformacoes);
 
         Label.LabelStyle estilo = new Label.LabelStyle();
         estilo.font = fontePontuacao;
         lbPontuacao = new Label("0",estilo);
-        palcoInformacaoes.addActor(lbPontuacao);
+        palcoInformacoes.addActor(lbPontuacao);
 
         //Inicia Botao
         ImageButton.ImageButtonStyle estiloBotao = new ImageButton.ImageButtonStyle();
@@ -218,7 +217,7 @@ public class TelaJogo extends TelaBase {
      * @param delta
      */
     private void renderizar(float delta) {
-        palcoInformacaoes.draw();
+        palcoInformacoes.draw();
 
     }
 
@@ -228,7 +227,7 @@ public class TelaJogo extends TelaBase {
      */
 
     private void atualizar(float delta) {
-        palcoInformacaoes.act(delta);
+        palcoInformacoes.act(delta);
 
         passaro.getCorpo().setFixedRotation(!gameOver);
         passaro.atualizar(delta, !gameOver);
@@ -340,7 +339,7 @@ public class TelaJogo extends TelaBase {
     public void dispose() {
     debug.dispose();
         mundo.dispose();
-        palcoInformacaoes.dispose();
+        palcoInformacoes.dispose();
         fontePontuacao.dispose();
         texturasPassaro[0].dispose();
         texturasPassaro[1].dispose();

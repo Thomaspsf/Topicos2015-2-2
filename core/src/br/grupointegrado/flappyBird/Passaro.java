@@ -71,7 +71,6 @@ public class Passaro {
         }
         rotacao = (float) Math.toRadians(rotacao);
         corpo.setTransform(corpo.getPosition(), rotacao);
-        System.out.println(velocidadeY);
 
 
     }
