@@ -52,8 +52,28 @@ public class Passaro {
      * atualiza o comportamento do passaro
      * @param delta
      */
-    public void atualizar(float delta){
-        atualizarVelocidade();
+    public void atualizar(float delta, boolean movimentar) {
+                if (movimentar){
+                        atualizarVelocidade();
+                        atualizarRotacao();
+                }
+            }
+        private void atualizarRotacao(){
+        float velocidadeY = corpo.getLinearVelocity().y;
+                float rotacao = 0;
+
+        if (velocidadeY < 0) {
+            rotacao = -15;
+        }else if (velocidadeY > 0){
+            rotacao = 15;
+        }else{
+            rotacao = 0;
+        }
+        rotacao = (float) Math.toRadians(rotacao);
+        corpo.setTransform(corpo.getPosition(), rotacao);
+        System.out.println(velocidadeY);
+
+
     }
 
     private void atualizarVelocidade() {
